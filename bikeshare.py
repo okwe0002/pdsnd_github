@@ -210,8 +210,8 @@ def display_data(df):
     row_ind = 0
     offset = 5
     while True:
-        raw_data = input('Would you like to see 5 lines of the data? Enter yes or no ')
-        if raw_data.lower() != 'yes':
+        raw_data = input('Would you like to see 5 lines of the data? Enter yes or no ').lower()
+        if raw_data != 'yes':
             break
         print(df.iloc[row_ind:offset, :])
         row_ind = offset
@@ -233,8 +233,8 @@ def main():
          trip_duration_stats(df)
          user_stats(df)
          display_data(df)
-         restart = input('\nWould you like to restart? Enter yes or no.\n')
-         if restart.lower() != 'yes':
+         restart = input('\nWould you like to restart? Enter yes or no.\n').lower()
+         if restart != 'yes':
              print('Thanks for exploring bikeshare data!')
              break
 
