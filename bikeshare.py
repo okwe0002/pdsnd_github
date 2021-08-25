@@ -11,33 +11,33 @@ days = ['all','monday','tuesday','wednesday','thursday','friday','saturday','sun
 
 def check_filters():
     """ Preliminary check which ensure user inputs are accurate
-        
+
         Returns: Accurate user inputs for city, month, day"""
-    
-    
+
+
     while True:
-        city = input("Enter the name of the city to explore: ")
-        if city.lower() in CITY_DATA:
+        city = input("Enter the name of the city to explore: ").lower()
+        if city in CITY_DATA:
             break
         else:
             print('Looks like there is no data for that city. Please try again with a valid city from: Washington, New York City and Chicago')
-            
+
     while True:
-        month = input("Enter the name of the month to filter by, or 'all' to apply no month filter: ")
-        if month.lower() in months:
+        month = input("Enter the name of the month to filter by, or 'all' to apply no month filter: ").lower()
+        if month in months:
             break
         else:
             print('Looks like {} is not a valid entry. Please enter a month from January to June or enter "all" to apply no filter'.format(month))
-     
+
     while True:
-        day = input("Enter the name of the day of week to filter by, or 'all' to apply no day filter: ")
-        if day.lower() in days:
+        day = input("Enter the name of the day of week to filter by, or 'all' to apply no day filter: ").lower()
+        if day in days:
             break
         else:
             print('Looks like {} is not a valid entry. Please enter a day from Sunday to Monday, or "all" to apply no filter'.format(day))
-    return city.lower(), month.lower(), day.lower()
-    
-      
+    return city, month, day
+
+
 def get_filters():
     """
     Asks user to specify a city, month, and day to analyze.
@@ -66,29 +66,29 @@ def load_data(city, month, day):
     Returns:
         df - Pandas DataFrame containing city data filtered by month and day
     """
-    
+
     df = pd.read_csv(CITY_DATA[city]).rename(columns={'Unnamed: 0': 'Id'}).set_index(['Id'])
     df['End Time'] = pd.to_datetime(df['End Time'])
     df['Start Time'] = pd.to_datetime(df['Start Time'])
     df['hour'] = df['Start Time'].dt.hour
     df['month'] = df['Start Time'].dt.month_name()
     df['day of the week'] = df['Start Time'].dt.day_name()
-    
+
     if month != 'all':
        df = df[df['month'] == (month.title())]
-    
+
     if day != 'all':
        df = df[df['day of the week'] == (day.title())]
-        
-    return df
-    
-    
-        
-        
-    
-    
 
-   
+    return df
+
+
+
+
+
+
+
+
 
 
 def time_stats(df):
@@ -136,18 +136,18 @@ def trip_duration_stats(df):
     start_time = time.time()
 
     #display total travel time in minutes
-    travel_time = df['Trip Duration']/60 
+    travel_time = df['Trip Duration']/60
     print('Total travel time was {} minutes'.format(int(travel_time.sum())))
-    
+
 
 
     # display mean travel time
     print('The average travel time per trip was {} minutes'.format(int(travel_time.mean())))
-    
+
     # display the shortest travel time
     print('The shortest trip lasted {} seconds'.format(int(travel_time.min() * 60)))
-          
-    # display the londest travel time      
+
+    # display the londest travel time
     print('The longest trip lasted {} minutes'.format(int(travel_time.max())))
     print("\nThis took %s seconds." % (time.time() - start_time))
     print('-'*40)
@@ -168,9 +168,9 @@ def user_stats(df):
         print('Counts by Gender: Male - {} and Female - {} '.format(df['Gender'].value_counts()['Male'], df['Gender'].value_counts()['Female']))
     except KeyError:
         print('No gender based stats for the city of Washington')
-        
+
     # Display counts of gender based on user type
-    
+
     try:                                                                            # Handle for any errors
         grouped_data = df.groupby('Gender')['User Type'].value_counts()             # Get the grouped data
         classes = df['User Type'].unique()
@@ -178,25 +178,25 @@ def user_stats(df):
            message = 'Subscriber: {}, Customer: {}'
            count = 1
            i= 0
-           while i < len(grouped_data) and count < len(grouped_data):                #Display grouped data 
+           while i < len(grouped_data) and count < len(grouped_data):                #Display grouped data
                  print('{}'.format(grouped_data.index[i][0]))
                  print(message.format(grouped_data[i], grouped_data[count]))
                  count+=2
                  i+=2
     except KeyError:
          print('No gender based stats for the city of Washington')
-        
+
         # Display earliest, most recent, and most common year of birth
     try:
         print('The earliest year of birth is {}'.format(int(df['Birth Year'].min())))
-        
+
         print('The most recent year of birth is {}'.format(int(df['Birth Year'].max())))
-        
+
         print('The most common year of birth is {}'.format(int(df['Birth Year'].mode()[0])))
     except KeyError:
         print('No birth year stats for the city of Washington')
-        
-    
+
+
 
     print("\nThis took %s seconds." % (time.time() - start_time))
     print('-'*40)
@@ -204,8 +204,8 @@ def user_stats(df):
 
 def display_data(df):
     """ Displays the 5 lines of data at a time, sequentially, at users request
-        
-        Input: DataFrame 
+
+        Input: DataFrame
         Returns: 5 rows of DataFrame sequentially"""
     row_ind = 0
     offset = 5
@@ -216,7 +216,7 @@ def display_data(df):
         print(df.iloc[row_ind:offset, :])
         row_ind = offset
         offset += 5
-    
+
 
 
 def main():
