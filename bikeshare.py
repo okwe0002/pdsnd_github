@@ -10,32 +10,32 @@ days = ['all','monday','tuesday','wednesday','thursday','friday','saturday','sun
 
 
 def check_filters():
-    """ Preliminary check to ensure user inputs are accurate
+    """ Preliminary check which ensure user inputs are accurate
 
         Returns: Accurate user inputs for city, month, day"""
 
 
     while True:
-        city = input("Enter the name of the city to explore: ")
-        if city.lower() in CITY_DATA:
+        city = input("Enter the name of the city to explore: ").lower()
+        if city in CITY_DATA:
             break
         else:
             print('Looks like there is no data for that city. Please try again with a valid city from: Washington, New York City and Chicago')
 
     while True:
-        month = input("Enter the name of the month to filter by, or 'all' to apply no month filter: ")
-        if month.lower() in months:
+        month = input("Enter the name of the month to filter by, or 'all' to apply no month filter: ").lower()
+        if month in months:
             break
         else:
             print('Looks like {} is not a valid entry. Please enter a month from January to June or enter "all" to apply no filter'.format(month))
 
     while True:
-        day = input("Enter the name of the day of week to filter by, or 'all' to apply no day filter: ")
-        if day.lower() in days:
+        day = input("Enter the name of the day of week to filter by, or 'all' to apply no day filter: ").lower()
+        if day in days:
             break
         else:
             print('Looks like {} is not a valid entry. Please enter a day from Sunday to Monday, or "all" to apply no filter'.format(day))
-    return city.lower(), month.lower(), day.lower()
+    return city, month, day
 
 
 def get_filters():
@@ -96,15 +96,18 @@ def time_stats(df):
 
     print('\nCalculating The Most Frequent Times of Travel...\n')
     start_time = time.time()
+    popular_month = df['month'].mode()[0]
+    popular_day = df['day of the week'].mode()[0]
+    popular_start_hour = df['hour'].mode()[0]
 
     # display the most common month
-    print('The most common month is {}'.format(df['month'].mode()[0]))
+    print('The most common month is {}'.format(popular_month))
 
     # display the most common day of week
-    print('The most common day of the week is {}'.format(df['day of the week'].mode()[0]))
+    print('The most common day of the week is {}'.format(popular_day))
 
     # display the most common start hour
-    print('The most common start hour is {}'.format(df['hour'].mode()[0]))
+    print('The most common start hour is {}'.format(popular_start_hour))
 
     print("\nThis took %s seconds." % (time.time() - start_time))
     print('-'*40)
@@ -115,15 +118,17 @@ def station_stats(df):
 
     print('\nCalculating The Most Popular Stations and Trip...\n')
     start_time = time.time()
+    start_station = df['Start Station']
+    end_station = df['End Station']
 
     # display most commonly used start station
-    print('The most commonly used start station is {}'.format(df['Start Station'].mode()[0]))
+    print('The most commonly used start station is {}'.format(start_station.mode()[0]))
 
     # display most commonly used end station
-    print('The most commonly used end station is {}'.format(df['End Station'].mode()[0]))
+    print('The most commonly used end station is {}'.format(end_station.mode()[0]))
 
     # display most frequent combination of start station and end station trip
-    print('The most frequent combination of start station and end station trip was from: "{}" TO "{}"'.format(((df['Start Station'] + ','+ df['End Station']).mode()[0]).split(',')[0], ((df['Start Station'] + ','+ df['End Station']).mode()[0]).split(',')[1]))
+    print('The most frequent combination of start station and end station trip was from: "{}" TO "{}"'.format(((start_station + ',' + end_station).mode()[0]).split(',')[0], ((start_station + ','+ end_station).mode()[0]).split(',')[1]))
 
     print("\nThis took %s seconds." % (time.time() - start_time))
     print('-'*40)
@@ -145,7 +150,7 @@ def trip_duration_stats(df):
     print('The average travel time per trip was {} minutes'.format(int(travel_time.mean())))
 
     # display the shortest travel time
-    print('The shortest trip lasted {} seconds'.format(int(travel_time.min() * 60)))
+    print('The shortest trip lasted {} seconds'.format(int(travel_time.min() * 60))) #Return travel time to seconds for easier readability
 
     # display the londest travel time
     print('The longest trip lasted {} minutes'.format(int(travel_time.max())))
@@ -158,27 +163,32 @@ def user_stats(df):
 
     print('\nCalculating User Stats...\n')
     start_time = time.time()
+    user_type = df['User Type']
 
     # Display counts of user types
-    print('Counts by User type: Subscribers - {} and Customers - {} '.format(df['User Type'].value_counts()['Subscriber'], df['User Type'].value_counts()['Customer']))
+
 
 
     # Display counts of gender
     try:
-        print('Counts by Gender: Male - {} and Female - {} '.format(df['Gender'].value_counts()['Male'], df['Gender'].value_counts()['Female']))
+        print('Counts by User type: Subscribers - {} and Customers - {} '.format(user_type.value_counts()['Subscriber'], user_type.value_counts()['Customer']))
+        user_gender = df['Gender']
+        print('Counts by Gender: Male - {} and Female - {} '.format(user_gender.value_counts()['Male'], user_gender.value_counts()['Female']))
     except KeyError:
         print('No gender based stats for the city of Washington')
 
     # Display counts of gender based on user type
 
     try:                                                                            # Handle for any errors
-        grouped_data = df.groupby('Gender')['User Type'].value_counts()             # Get the grouped data
-        classes = df['User Type'].unique()
-        if len(classes) > 1:
+        grouped_data = df.groupby('Gender')['User Type'].value_counts()
+        num_grouped_data = len(grouped_data)            # Get the grouped data
+        classes = user_type.unique()
+        num_classes = len(classes)
+        if num_classes > 1:
            message = 'Subscriber: {}, Customer: {}'
            count = 1
            i= 0
-           while i < len(grouped_data) and count < len(grouped_data):                #Display grouped data
+           while i < num_grouped_data  and count < num_grouped_data:                #Display grouped data
                  print('{}'.format(grouped_data.index[i][0]))
                  print(message.format(grouped_data[i], grouped_data[count]))
                  count+=2
@@ -188,11 +198,13 @@ def user_stats(df):
 
         # Display earliest, most recent, and most common year of birth
     try:
-        print('The earliest year of birth is {}'.format(int(df['Birth Year'].min())))
+        user_birthyear = df['Birth Year']
 
-        print('The most recent year of birth is {}'.format(int(df['Birth Year'].max())))
+        print('The earliest year of birth is {}'.format(int(user_birthyear.min())))
 
-        print('The most common year of birth is {}'.format(int(df['Birth Year'].mode()[0])))
+        print('The most recent year of birth is {}'.format(int(user_birthyear.max())))
+
+        print('The most common year of birth is {}'.format(int(user_birthyear.mode()[0])))
     except KeyError:
         print('No birth year stats for the city of Washington')
 
@@ -207,11 +219,12 @@ def display_data(df):
 
         Input: DataFrame
         Returns: 5 rows of DataFrame sequentially"""
+    pd.set_option('display.max_columns',200)
     row_ind = 0
     offset = 5
     while True:
-        raw_data = input('Would you like to see 5 lines of the data? Enter yes or no ')
-        if raw_data.lower() != 'yes':
+        raw_data = input('Would you like to see 5 lines of the data? Enter yes or no ').lower()
+        if raw_data != 'yes':
             break
         print(df.iloc[row_ind:offset, :])
         row_ind = offset
@@ -233,8 +246,8 @@ def main():
          trip_duration_stats(df)
          user_stats(df)
          display_data(df)
-         restart = input('\nWould you like to restart? Enter yes or no.\n')
-         if restart.lower() != 'yes':
+         restart = input('\nWould you like to restart? Enter yes or no.\n').lower()
+         if restart != 'yes':
              print('Thanks for exploring bikeshare data!')
              break
 
