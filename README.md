@@ -7,7 +7,8 @@ August 20, 2021
 U.S Bikeshare Data Analysis
 
 ### Description
-This project takes a look at bikeshare data from 3 cities in the U.S.A - Washington, New York City and Chicago - and displays some interesting observations in the data, with options to filter by the month of the year and the day of the week. 
+This project takes a look at bikeshare data from 3 cities in the U.S.A - Washington, New York City and Chicago - and displays some interesting observations in the data, with options to filter by the month of the year and the day of the week.
+Some of these observations include statistics on the most frequent travel times and durations, the most popular stations and on users as well. 
 
 ### Files used
 washington.csv, new_york_city.csv and chicago.csv
