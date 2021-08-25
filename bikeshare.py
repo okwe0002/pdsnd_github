@@ -164,18 +164,22 @@ def user_stats(df):
     print('\nCalculating User Stats...\n')
     start_time = time.time()
     user_type = df['User Type']
-    user_gender = df['Gender']
-    user_birthyear = df['Birth Year']
 
     # Display counts of user types
-    print('Counts by User type: Subscribers - {} and Customers - {} '.format(user_type.value_counts()['Subscriber'], user_type.value_counts()['Customer']))
+
 
 
     # Display counts of gender
     try:
+        print('Counts by User type: Subscribers - {} and Customers - {} '.format(user_type.value_counts()['Subscriber'], user_type.value_counts()['Customer']))
+        user_gender = df['Gender']
         print('Counts by Gender: Male - {} and Female - {} '.format(user_gender.value_counts()['Male'], user_gender.value_counts()['Female']))
     except KeyError:
         print('No gender based stats for the city of Washington')
+
+
+
+
 
     # Display counts of gender based on user type
 
@@ -198,6 +202,8 @@ def user_stats(df):
 
         # Display earliest, most recent, and most common year of birth
     try:
+        user_birthyear = df['Birth Year']
+
         print('The earliest year of birth is {}'.format(int(user_birthyear.min())))
 
         print('The most recent year of birth is {}'.format(int(user_birthyear.max())))
@@ -217,6 +223,7 @@ def display_data(df):
 
         Input: DataFrame
         Returns: 5 rows of DataFrame sequentially"""
+    pd.set_option('display.max_columns',200)
     row_ind = 0
     offset = 5
     while True:
